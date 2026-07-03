@@ -49,10 +49,12 @@ public class MainActivity extends Activity {
     static final String PREFS_NAME = "stoic_card";
     static final String MORNING_QUOTE_KEY = "morning_quote";
     private static final String ENTRIES_KEY_PREFIX = "entries_";
+    private static final String JOURNAL_KEY_PREFIX = "journal_";
     private static final String OPENED_DAYS_KEY = "opened_days";
     private static final int ENTRY_RETENTION_DAYS = 30;
     private static final int STREAK_DOT_COUNT = 14;
     private static final int MAX_ENTRY_LENGTH = 140;
+    private static final int MAX_JOURNAL_LENGTH = 2000;
     private static final int REQUEST_NOTIFICATION_PERMISSION = 10;
 
     private static final int COLOR_BACKGROUND = Color.rgb(7, 8, 10);
@@ -101,6 +103,8 @@ public class MainActivity extends Activity {
     private Button todayTabButton;
     private Button historyTabButton;
     private Switch morningSwitch;
+    private EditText journalInput;
+    private TextView journalStatus;
     private boolean historyVisible = false;
 
     @Override
@@ -193,6 +197,18 @@ public class MainActivity extends Activity {
         prefs.edit().putString(ENTRIES_KEY_PREFIX + todayKey, entries.toString()).apply();
     }
 
+    private String loadJournal(String key) {
+        return prefs.getString(JOURNAL_KEY_PREFIX + key, "");
+    }
+
+    private void saveTodayJournal(String text) {
+        if (text.isEmpty()) {
+            prefs.edit().remove(JOURNAL_KEY_PREFIX + todayKey).apply();
+        } else {
+            prefs.edit().putString(JOURNAL_KEY_PREFIX + todayKey, text).apply();
+        }
+    }
+
     // ---------- ui ----------
 
     private void buildUi() {
@@ -256,7 +272,7 @@ public class MainActivity extends Activity {
         pulseParams.rightMargin = dp(8);
         header.addView(pulse, pulseParams);
 
-        header.addView(labelText("STOIC CARD // 002", 10, COLOR_MUTED));
+        header.addView(labelText("STOIC CARD // 003", 10, COLOR_MUTED));
 
         View headerSpacer = new View(this);
         header.addView(headerSpacer, new LinearLayout.LayoutParams(0, 1, 1f));
@@ -367,6 +383,12 @@ public class MainActivity extends Activity {
         quoteMarkParams.topMargin = dp(30);
         todaySection.addView(quoteMark, quoteMarkParams);
 
+        TextView themeLabel = labelText(
+                MONTHS[now.get(Calendar.MONTH)] + " // " + Quotes.todayTheme(), 10, COLOR_MUTED);
+        LinearLayout.LayoutParams themeParams = wrapParams();
+        themeParams.topMargin = dp(14);
+        todaySection.addView(themeLabel, themeParams);
+
         TextView quoteText = new TextView(this);
         quoteText.setText(quote[0]);
         quoteText.setTextSize(20);
@@ -451,6 +473,58 @@ public class MainActivity extends Activity {
 
         todaySection.addView(divider(), dividerParams());
 
+        // daily journal
+        todaySection.addView(labelText("EVENING PAGE", 10, COLOR_MUTED));
+
+        TextView promptText = new TextView(this);
+        promptText.setText(Quotes.todayPrompt());
+        promptText.setTextSize(13);
+        promptText.setTextColor(COLOR_TEXT);
+        promptText.setTypeface(Typeface.MONOSPACE);
+        promptText.setLineSpacing(0, 1.3f);
+        LinearLayout.LayoutParams promptParams = wrapParams();
+        promptParams.topMargin = dp(12);
+        todaySection.addView(promptText, promptParams);
+
+        journalInput = new EditText(this);
+        journalInput.setHint("write here, for no one but yourself");
+        journalInput.setHintTextColor(COLOR_FAINT);
+        journalInput.setTextColor(COLOR_TEXT);
+        journalInput.setTextSize(14);
+        journalInput.setTypeface(Typeface.MONOSPACE);
+        journalInput.setMinLines(4);
+        journalInput.setMaxLines(10);
+        journalInput.setGravity(Gravity.TOP);
+        journalInput.setFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_JOURNAL_LENGTH)});
+        journalInput.setPadding(dp(14), dp(14), dp(14), dp(14));
+        GradientDrawable journalShape = new GradientDrawable();
+        journalShape.setColor(Color.TRANSPARENT);
+        journalShape.setStroke(dp(1), COLOR_PANEL_STROKE);
+        journalShape.setCornerRadius(dp(2));
+        journalInput.setBackground(journalShape);
+        journalInput.setText(loadJournal(todayKey));
+        LinearLayout.LayoutParams journalParams = wrapParams();
+        journalParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
+        journalParams.topMargin = dp(14);
+        todaySection.addView(journalInput, journalParams);
+
+        LinearLayout journalRow = new LinearLayout(this);
+        journalRow.setOrientation(LinearLayout.HORIZONTAL);
+        journalRow.setGravity(Gravity.CENTER_VERTICAL);
+        journalStatus = labelText(loadJournal(todayKey).isEmpty() ? "" : "SAVED", 9, COLOR_FAINT);
+        journalRow.addView(journalStatus);
+        View journalSpacer = new View(this);
+        journalRow.addView(journalSpacer, new LinearLayout.LayoutParams(0, 1, 1f));
+        Button saveButton = pillButton("SAVE PAGE", true);
+        saveButton.setOnClickListener(v -> saveJournal());
+        journalRow.addView(saveButton, wrapParams());
+        LinearLayout.LayoutParams journalRowParams = wrapParams();
+        journalRowParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
+        journalRowParams.topMargin = dp(10);
+        todaySection.addView(journalRow, journalRowParams);
+
+        todaySection.addView(divider(), dividerParams());
+
         // morning quote toggle
         LinearLayout morningRow = new LinearLayout(this);
         morningRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -521,20 +595,31 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void saveJournal() {
+        String text = journalInput.getText().toString().trim();
+        saveTodayJournal(text);
+        journalStatus.setText(text.isEmpty() ? "" : "SAVED");
+        hideKeyboard();
+    }
+
     private void renderHistory() {
         historyContainer.removeAllViews();
-        List<String> keys = new ArrayList<>();
+        Set<String> dates = new HashSet<>();
         for (String key : prefs.getAll().keySet()) {
             if (key.startsWith(ENTRIES_KEY_PREFIX)) {
-                keys.add(key.substring(ENTRIES_KEY_PREFIX.length()));
+                dates.add(key.substring(ENTRIES_KEY_PREFIX.length()));
+            } else if (key.startsWith(JOURNAL_KEY_PREFIX)) {
+                dates.add(key.substring(JOURNAL_KEY_PREFIX.length()));
             }
         }
+        List<String> keys = new ArrayList<>(dates);
         Collections.sort(keys, Collections.reverseOrder());
 
         int shownDays = 0;
         for (String key : keys) {
             JSONArray entries = loadEntries(key);
-            if (entries.length() == 0) {
+            String journal = loadJournal(key);
+            if (entries.length() == 0 && journal.isEmpty()) {
                 continue;
             }
 
@@ -558,13 +643,35 @@ public class MainActivity extends Activity {
             dayHeader.addView(labelText(prettyDay(key), 10, COLOR_TEXT));
             View headerSpacer = new View(this);
             dayHeader.addView(headerSpacer, new LinearLayout.LayoutParams(0, 1, 1f));
-            dayHeader.addView(labelText(
-                    inControl + " IN CONTROL · " + released + " RELEASED", 9, COLOR_MUTED));
+            String daySummary = entries.length() == 0
+                    ? "JOURNAL"
+                    : inControl + " IN CONTROL · " + released + " RELEASED";
+            dayHeader.addView(labelText(daySummary, 9, COLOR_MUTED));
             LinearLayout.LayoutParams dayHeaderParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
             dayHeaderParams.topMargin = dp(shownDays == 0 ? 30 : 26);
             historyContainer.addView(dayHeader, dayHeaderParams);
+
+            if (!journal.isEmpty()) {
+                TextView journalView = new TextView(this);
+                journalView.setText(journal);
+                journalView.setTextSize(13);
+                journalView.setTextColor(COLOR_MUTED);
+                journalView.setTypeface(Typeface.MONOSPACE);
+                journalView.setLineSpacing(0, 1.3f);
+                journalView.setPadding(dp(12), dp(10), dp(12), dp(10));
+                GradientDrawable journalShape = new GradientDrawable();
+                journalShape.setColor(Color.TRANSPARENT);
+                journalShape.setStroke(dp(1), COLOR_PANEL_STROKE);
+                journalShape.setCornerRadius(dp(2));
+                journalView.setBackground(journalShape);
+                LinearLayout.LayoutParams journalViewParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+                journalViewParams.topMargin = dp(10);
+                historyContainer.addView(journalView, journalViewParams);
+            }
 
             for (int i = 0; i < entries.length(); i++) {
                 JSONObject entry = entries.optJSONObject(i);

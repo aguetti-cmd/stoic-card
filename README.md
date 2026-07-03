@@ -6,9 +6,10 @@ Built as a proof of concept for AI-assisted app development: plain Java, fully p
 
 ## Features
 
-- Daily rotating quote from Marcus Aurelius, Epictetus, and Seneca (30 sourced quotes, deterministic by day of year)
+- One quote per calendar date (366 including Feb 29), drawn from public-domain translations of Marcus Aurelius, Epictetus, Seneca, and Musonius Rufus, organized under 12 monthly themes (Clarity, Emotion, Awareness, Judgment, Action, Obstacles, Duty, Pragmatism, Courage, Virtue, Acceptance, Mortality)
+- Evening page: one journal entry per day with a rotating prompt tied to the month's theme; entries are kept indefinitely
 - Friction sorter: type what is on your mind, then file it as "in my control" (actionable, with a checkbox) or "not mine" (released, struck through)
-- History tab: read-only view of the last 30 days with per-day counts
+- History tab: read-only view of past journal pages (all time) and friction entries (last 30 days) with per-day counts
 - Streak counter with a 14-day dot row
 - Optional morning notification at 08:00 with the quote of the day (local alarm, survives reboot)
 - Day-of-year header drawn by a custom 5x7 dot-matrix view, monochrome palette with a red accent
@@ -16,7 +17,7 @@ Built as a proof of concept for AI-assisted app development: plain Java, fully p
 ## Stack
 
 - Plain Java, single Activity plus a broadcast receiver, UI built entirely in code
-- No third-party dependencies; persistence via SharedPreferences with 30-day entry retention
+- No third-party dependencies; persistence via SharedPreferences (30-day retention for friction entries, journal pages kept forever)
 - minSdk 23, targetSdk 36
 - Permissions: `POST_NOTIFICATIONS` and `RECEIVE_BOOT_COMPLETED`, both serving the morning quote
 
