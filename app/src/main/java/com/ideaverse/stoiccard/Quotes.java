@@ -206,7 +206,7 @@ final class Quotes {
 
     private static final String[][] APR = {
             {"If it is not right, do not do it. If it is not true, do not say it.", "Marcus Aurelius", "Meditations 12.17"},
-            {"Everything is what your opinion makes it, and that opinion lies with yourself.", "Marcus Aurelius", "Meditations 12.22"},
+            {"Everything is what your opinion makes it, and that opinion lies with yourself.", "Marcus Aurelius", "Meditations 12.22 (paraphrase)"},
             {"It is not things that disturb us, but our judgments about things.", "Epictetus", "Enchiridion 5"},
             {"Take away your opinion, and there is taken away the complaint 'I have been harmed.'", "Marcus Aurelius", "Meditations 4.7"},
             {"We are more often frightened than hurt; and we suffer more from opinion than from reality.", "Seneca", "Letters 13"},
