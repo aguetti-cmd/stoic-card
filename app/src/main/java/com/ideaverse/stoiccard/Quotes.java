@@ -148,7 +148,7 @@ final class Quotes {
             {"When you are offended at any man's fault, turn to yourself and study your own failings.", "Epictetus", "Fragments"},
             {"It is not the man who has too little, but the man who craves more, that is poor.", "Seneca", "Letters 2"},
             {"Anger, if not restrained, is frequently more hurtful to us than the injury that provokes it.", "Seneca", "On Anger 1.12"},
-            {"You have power over your mind, not outside events. Realise this, and you will find strength.", "Marcus Aurelius", "Meditations 12.22"},
+            {"All depends on your opinions, and these are in your power. Remove your opinion, and, as one who has rounded the point, you find a calm harbour.", "Marcus Aurelius", "Meditations 12.22"},
             {"Fear keeps pace with hope; both belong to a mind in suspense, hanging on what the future may bring.", "Seneca", "Letters 5"},
             {"If you are pained by any external thing, it is not the thing that disturbs you, but your own judgment about it.", "Marcus Aurelius", "Meditations 8.47"},
             {"Any person capable of angering you becomes your master.", "Epictetus", "Enchiridion (after 20)"},
@@ -272,7 +272,7 @@ final class Quotes {
     };
 
     private static final String[][] JUN = {
-            {"The impediment to action advances action. What stands in the way becomes the way.", "Marcus Aurelius", "Meditations 5.20"},
+            {"The mind converts and changes every hindrance to its activity into an aid, and that which is an obstacle on the road helps us on this road.", "Marcus Aurelius", "Meditations 5.20"},
             {"Difficulties strengthen the mind, as labour does the body.", "Seneca", "Letters 78"},
             {"It is a rough road that leads to the heights of greatness.", "Seneca", "Letters 84"},
             {"The greater the difficulty, the more glory in surmounting it.", "Epictetus", "Discourses (attr.)"},
@@ -402,7 +402,7 @@ final class Quotes {
             {"You will find rest from vain fancies if you do every act in life as if it were your last.", "Marcus Aurelius", "Meditations 2.5"},
             {"He is a man of courage who does not fear an honourable death.", "Seneca", "Letters 76 (adapted)"},
             {"Man is not worried by real problems so much as by his imagined anxieties about real problems.", "Epictetus", "Discourses (attr.)"},
-            {"Stand firm, like a rock against which the waves break continually; it stands, and the water grows calm around it.", "Marcus Aurelius", "Meditations 4.49"}
+            {"Be like the headland on which the waves continually break, but it stands firm and about it the boiling waters sink to sleep.", "Marcus Aurelius", "Meditations 4.49"}
     };
 
     private static final String[][] OCT = {
